@@ -1,0 +1,100 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { supabase, NewsItem } from '@/lib/supabase';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+
+export default function NewsDetail() {
+  const params = useParams();
+  const [item, setItem] = useState<NewsItem | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      const { data } = await supabase.from('news').select('*').eq('id', params.id).single();
+      if (data) setItem(data);
+      setLoading(false);
+    };
+    fetchNews();
+  }, [params.id]);
+
+  const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-comsats-blue border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">Not Found</h1>
+          <p className="text-slate-500 mb-6">This news article could not be found.</p>
+          <Link href="/#news-events" className="px-6 py-3 bg-comsats-blue text-white rounded-full font-semibold hover:bg-comsats-blue-dark transition-colors">
+            Back to Portal
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
+          <Link href="/#news-events" className="flex items-center gap-2 text-slate-500 hover:text-comsats-blue transition-colors text-sm font-medium">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            Back to Portal
+          </Link>
+        </div>
+      </nav>
+
+      {/* Hero Image */}
+      {item.image_url && (
+        <div className="w-full h-[400px] relative">
+          <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent"></div>
+        </div>
+      )}
+
+      {/* Content */}
+      <article className="max-w-4xl mx-auto px-6 py-16">
+        <div className="mb-8">
+          <div className="flex items-center gap-3 text-sm text-comsats-blue font-semibold tracking-wider uppercase mb-4">
+            <span className="px-3 py-1 bg-blue-50 rounded-full">News</span>
+            <span className="text-slate-400">&middot;</span>
+            <span className="text-slate-500 normal-case font-normal">{fmt(item.created_at)}</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">{item.title}</h1>
+          <div className="flex items-center gap-3 text-slate-500 text-sm">
+            <div className="w-8 h-8 bg-comsats-blue rounded-full flex items-center justify-center text-white font-bold text-xs">
+              {item.author.charAt(0).toUpperCase()}
+            </div>
+            <span>By <strong className="text-slate-700">{item.author}</strong></span>
+          </div>
+        </div>
+
+        <div className="w-full h-px bg-slate-200 mb-10"></div>
+
+        <div className="prose prose-lg prose-slate max-w-none">
+          {item.content.split('\n').map((paragraph, idx) => (
+            <p key={idx} className="text-slate-700 leading-relaxed text-lg mb-6">{paragraph}</p>
+          ))}
+        </div>
+
+        <div className="mt-16 pt-8 border-t border-slate-200">
+          <Link href="/#news-events" className="inline-flex items-center gap-2 text-comsats-blue hover:text-comsats-blue-dark font-semibold transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            Back to News & Events
+          </Link>
+        </div>
+      </article>
+    </div>
+  );
+}
