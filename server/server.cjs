@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { News, Event, Admin } = require('./models');
+const { News, Event, Admin } = require('./models.cjs');
 
 const app = express();
 app.use(cors());
