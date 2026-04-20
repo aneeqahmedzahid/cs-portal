@@ -1,26 +1,27 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
-import { supabase, EventItem } from '@/lib/supabase';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
+import { useParams, Link } from 'react-router-dom';
+import { api } from '../lib/api';
 
 export default function EventDetail() {
-  const params = useParams();
-  const [item, setItem] = useState<EventItem | null>(null);
+  const { id } = useParams();
+  const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvent = async () => {
-      const { data } = await supabase.from('events').select('*').eq('id', params.id).single();
-      if (data) setItem(data);
+      try {
+        const data = await api.getEventById(id);
+        if (data) setItem(data);
+      } catch (err) {
+        console.error("Error fetching event:", err);
+      }
       setLoading(false);
     };
     fetchEvent();
-  }, [params.id]);
+  }, [id]);
 
-  const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  const fmtTime = (d: string) => new Date(d).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const fmt = (d) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const fmtTime = (d) => new Date(d).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
   if (loading) {
     return (
@@ -36,7 +37,7 @@ export default function EventDetail() {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">Not Found</h1>
           <p className="text-slate-500 mb-6">This event could not be found.</p>
-          <Link href="/#news-events" className="px-6 py-3 bg-comsats-blue text-white rounded-full font-semibold hover:bg-comsats-blue-dark transition-colors">
+          <Link to="/" className="px-6 py-3 bg-comsats-blue text-white rounded-full font-semibold hover:bg-comsats-blue-dark transition-colors">
             Back to Portal
           </Link>
         </div>
@@ -46,10 +47,13 @@ export default function EventDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
+      {/* Header with Logo */}
       <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
-          <Link href="/#news-events" className="flex items-center gap-2 text-slate-500 hover:text-comsats-blue transition-colors text-sm font-medium">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center group">
+            <img src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/CSPORTALLOGO.png" alt="COMSATS Logo" className="h-12 w-auto mix-blend-multiply group-hover:scale-105 transition-transform object-contain" />
+          </Link>
+          <Link to="/" className="flex items-center gap-2 text-slate-500 hover:text-comsats-blue transition-colors text-sm font-medium">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Back to Portal
           </Link>
@@ -88,7 +92,7 @@ export default function EventDetail() {
             </div>
             <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
               <div className="text-xs text-slate-400 uppercase font-semibold tracking-wider mb-1">Organized By</div>
-              <div className="text-slate-900 font-bold">{item.author}</div>
+              <div className="text-slate-900 font-bold">{item.author || 'Admin'}</div>
             </div>
           </div>
         </div>
@@ -96,13 +100,13 @@ export default function EventDetail() {
         <div className="w-full h-px bg-slate-200 mb-10"></div>
 
         <div className="prose prose-lg prose-slate max-w-none">
-          {item.description.split('\n').map((paragraph, idx) => (
+          {item.description && item.description.split('\n').map((paragraph, idx) => (
             <p key={idx} className="text-slate-700 leading-relaxed text-lg mb-6">{paragraph}</p>
           ))}
         </div>
 
         <div className="mt-16 pt-8 border-t border-slate-200">
-          <Link href="/#news-events" className="inline-flex items-center gap-2 text-comsats-blue hover:text-comsats-blue-dark font-semibold transition-colors">
+          <Link to="/" className="inline-flex items-center gap-2 text-comsats-blue hover:text-comsats-blue-dark font-semibold transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Back to News & Events
           </Link>

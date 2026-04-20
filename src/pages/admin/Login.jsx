@@ -1,11 +1,9 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { api } from '../../lib/api';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function AdminLogin() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,45 +11,45 @@ export default function AdminLogin() {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.replace('/admin/dashboard');
+    const checkSession = () => {
+      const token = localStorage.getItem('admin_token');
+      if (token) {
+        navigate('/admin/dashboard', { replace: true });
       } else {
         setCheckingAuth(false);
       }
     };
     checkSession();
-  }, [router]);
+  }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setError(error.message);
+    try {
+      const data = await api.login(email, password);
+      if (data.session && data.session.access_token) {
+        localStorage.setItem('admin_token', data.session.access_token);
+        localStorage.setItem('admin_email', data.session.user.email);
+        navigate('/admin/dashboard');
+      }
+    } catch (err) {
+      setError(err.message || 'Login failed');
       setLoading(false);
-    } else {
-      router.push('/admin/dashboard');
     }
   };
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-comsats-blue border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-comsats-blue rounded-full filter blur-[200px] opacity-10 translate-x-1/3 -translate-y-1/3"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-500 rounded-full filter blur-[200px] opacity-10 -translate-x-1/3 translate-y-1/3"></div>
@@ -59,24 +57,24 @@ export default function AdminLogin() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-10">
-          <a href="/" className="inline-block">
-            <img src="/logo.png" alt="COMSATS Logo" className="h-16 mx-auto mb-6 object-contain" />
-          </a>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Admin Portal</h1>
-          <p className="text-slate-400 mt-2 font-light">Sign in to manage news & events</p>
+          <Link to="/" className="inline-block">
+            <img src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/CSPORTALLOGO.png" alt="COMSATS Logo" className="h-20 mx-auto mb-6 object-contain" />
+          </Link>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Admin Portal</h1>
+          <p className="text-slate-500 mt-2 font-medium">Sign in to manage news & events</p>
         </div>
 
         {/* Login Card */}
-        <div className="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)]">
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-2xl">
           <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm">
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm">
                 {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
               <input
                 id="email"
                 type="email"
@@ -84,12 +82,12 @@ export default function AdminLogin() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@example.com"
                 required
-                className="w-full px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-comsats-blue focus:border-transparent transition-all text-sm"
+                className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-comsats-blue focus:border-transparent transition-all text-sm"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
               <input
                 id="password"
                 type="password"
@@ -97,7 +95,7 @@ export default function AdminLogin() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full px-5 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-comsats-blue focus:border-transparent transition-all text-sm"
+                className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-comsats-blue focus:border-transparent transition-all text-sm"
               />
             </div>
 
@@ -116,7 +114,7 @@ export default function AdminLogin() {
           </form>
         </div>
 
-        <p className="text-center text-slate-600 text-xs mt-8">
+        <p className="text-center text-slate-400 text-xs mt-8">
           CS Department Portal &middot; Admin Access Only
         </p>
       </div>

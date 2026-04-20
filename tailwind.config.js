@@ -1,10 +1,8 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+export default {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./index.html",
+    "./src/**/*.{js,jsx}",
   ],
   theme: {
     extend: {
@@ -15,7 +13,7 @@ const config: Config = {
         'slate-850': '#151e2e',
       },
       fontFamily: {
-        sans: ['var(--font-outfit)', 'sans-serif'],
+        sans: ['Outfit', 'sans-serif'],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -26,4 +24,3 @@ const config: Config = {
   },
   plugins: [],
 };
-export default config;
