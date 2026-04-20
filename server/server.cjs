@@ -14,9 +14,32 @@ const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+let cachedDb = null;
+async function connectToDatabase() {
+  if (cachedDb) return cachedDb;
+  if (!process.env.MONGO_URI) {
+    throw new Error('MONGO_URI is not defined in environment variables');
+  }
+  const db = await mongoose.connect(process.env.MONGO_URI);
+  cachedDb = db;
+  return db;
+}
+
+// Simple health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Server is running' });
+});
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    console.error('Database connection error:', err);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // Auth Middleware
 const authMiddleware = (req, res, next) => {
