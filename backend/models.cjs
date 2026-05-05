@@ -19,6 +19,7 @@ const newsSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 }, transformSchema);
+newsSchema.index({ created_at: -1 });
 
 const eventSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -28,15 +29,17 @@ const eventSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 }, transformSchema);
+eventSchema.index({ event_date: 1 });
 
 const adminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   created_at: { type: Date, default: Date.now }
 }, transformSchema);
+adminSchema.index({ created_at: -1 });
 
-const News = mongoose.model('News', newsSchema);
-const Event = mongoose.model('Event', eventSchema);
-const Admin = mongoose.model('Admin', adminSchema);
+const News = mongoose.models.News || mongoose.model('News', newsSchema);
+const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);
+const Admin = mongoose.models.Admin || mongoose.model('Admin', adminSchema);
 
 module.exports = { News, Event, Admin };
