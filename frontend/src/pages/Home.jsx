@@ -124,7 +124,7 @@ We as a team aim to take the department to heights of success and glory and prep
       <nav className="fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <a href="#hero" className="flex items-center group">
-            <img src={getCloudinaryUrl('WhatsApp_20Image_202026-04-22_20at_207.03.53_20PM_ldw4ql')} alt="COMSATS Logo" className="h-24 w-auto mix-blend-multiply group-hover:scale-105 transition-transform object-contain" />
+            <img src={getCloudinaryUrl('CSPORTALLOGO_qkiv2r')} alt="COMSATS Logo" className="h-24 w-auto mix-blend-multiply group-hover:scale-105 transition-transform object-contain" />
           </a>
 
           <div className="hidden md:flex gap-8 items-center font-medium text-sm tracking-wide">
