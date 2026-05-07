@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../lib/api';
 import { uploadToCloudinary } from '../../lib/cloudinary';
 import staticFacultyData from '../../data/facultyData.json';
@@ -205,7 +206,7 @@ export default function FacultyManagement() {
             {/* Image Upload Section */}
             <div className="flex flex-col items-center space-y-3">
               <div className="w-32 h-32 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative">
-                {previewImg && !previewImg.startsWith('data:image/png;base64') ? (
+                {previewImg ? (
                   <img src={previewImg} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
                   <div className="text-center">

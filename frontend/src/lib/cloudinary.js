@@ -1,6 +1,7 @@
 // Cloudinary configuration and helper functions
 const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'YOUR_CLOUD_NAME';
 const apiKey = import.meta.env.VITE_CLOUDINARY_API_KEY || '499438575588685';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 export const getCloudinaryUrl = (publicId, type = 'image') => {
   if (!publicId) return '';
@@ -17,7 +18,7 @@ export async function uploadToCloudinary(file) {
   // If we want to do it via backend (recommended since we have API secret there)
   // For now, let's assume the backend has an upload endpoint
   const token = sessionStorage.getItem('admin_token');
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
+  const res = await fetch(`${API_BASE_URL}/upload`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`
