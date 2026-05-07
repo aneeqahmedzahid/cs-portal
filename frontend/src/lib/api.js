@@ -115,5 +115,38 @@ export const api = {
     });
     if (!res.ok) throw new Error((await res.json()).error);
     return res.json();
+  },
+
+  // Faculty
+  getFaculty: async () => {
+    const res = await fetch(`${API_BASE_URL}/faculty`, { headers: getAuthHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch faculty');
+    return res.json();
+  },
+  createFaculty: async (data) => {
+    const res = await fetch(`${API_BASE_URL}/faculty`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error((await res.json()).error);
+    return res.json();
+  },
+  updateFaculty: async (id, data) => {
+    const res = await fetch(`${API_BASE_URL}/faculty/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error((await res.json()).error);
+    return res.json();
+  },
+  deleteFaculty: async (id) => {
+    const res = await fetch(`${API_BASE_URL}/faculty/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error((await res.json()).error);
+    return res.json();
   }
 };

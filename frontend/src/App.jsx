@@ -4,7 +4,7 @@ import Home from './pages/Home'
 import NewsDetail from './pages/NewsDetail'
 import EventDetail from './pages/EventDetail'
 import AdminLogin from './pages/admin/Login'
-import AdminDashboard from './pages/admin/Dashboard'
+import AdminPortal from './pages/admin/AdminPortal'
 
 export default function App() {
   return (
@@ -14,7 +14,7 @@ export default function App() {
         <Route path="/news/:id" element={<NewsDetail />} />
         <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<AdminPortal />} />
       </Routes>
     </BrowserRouter>
   )

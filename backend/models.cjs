@@ -38,8 +38,22 @@ const adminSchema = new mongoose.Schema({
 }, transformSchema);
 adminSchema.index({ created_at: -1 });
 
+const facultySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  designation: { type: String, required: true },
+  interests: { type: String, default: '' },
+  image_url: { type: String, default: '' },
+  link: { type: String, default: '' },
+  hecApproved: { type: Boolean, default: false },
+  mainContributor: { type: Boolean, default: false },
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now }
+}, transformSchema);
+facultySchema.index({ name: 1 });
+
 const News = mongoose.models.News || mongoose.model('News', newsSchema);
 const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);
 const Admin = mongoose.models.Admin || mongoose.model('Admin', adminSchema);
+const Faculty = mongoose.models.Faculty || mongoose.model('Faculty', facultySchema);
 
-module.exports = { News, Event, Admin };
+module.exports = { News, Event, Admin, Faculty };

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { News, Event, Admin } = require('./models.cjs');
+const { News, Event, Admin, Faculty } = require('./models.cjs');
 
 const app = express();
 app.use(cors());
@@ -233,6 +233,46 @@ app.post('/api/admins', authMiddleware, async (req, res) => {
 app.delete('/api/admins/:id', authMiddleware, async (req, res) => {
   try {
     await Admin.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- FACULTY ROUTES ---
+app.get('/api/faculty', async (req, res) => {
+  try {
+    const faculty = await Faculty.find().sort({ name: 1 }).lean();
+    res.json(faculty.map(serializeDocument));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/faculty', authMiddleware, async (req, res) => {
+  try {
+    const faculty = new Faculty(req.body);
+    await faculty.save();
+    res.status(201).json(faculty);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.put('/api/faculty/:id', authMiddleware, async (req, res) => {
+  try {
+    req.body.updated_at = Date.now();
+    const faculty = await Faculty.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!faculty) return res.status(404).json({ error: 'Faculty not found' });
+    res.json(faculty);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete('/api/faculty/:id', authMiddleware, async (req, res) => {
+  try {
+    await Faculty.findByIdAndDelete(req.params.id);
     res.json({ message: 'Deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
