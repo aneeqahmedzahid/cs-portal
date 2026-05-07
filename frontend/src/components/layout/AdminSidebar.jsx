@@ -14,7 +14,7 @@ export default function AdminSidebar({ collapsed, onToggle, showMobileSidebar, s
         <Link to="/" className="flex-shrink-0">
           <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center">
             <img 
-              src={getCloudinaryUrl('CSPORTALLOGO_qkiv2r')} 
+              src={getCloudinaryUrl('FOOTERLOGO_zyaqbf')} 
               alt="Logo" 
               className="w-7 h-7 object-contain brightness-0 invert"
             />

@@ -59,7 +59,7 @@ export default function AdminLogin() {
         {/* Logo */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-block">
-            <img src={getCloudinaryUrl('CSPORTALLOGO_qkiv2r')} alt="COMSATS Logo" className="h-20 mx-auto mb-6 object-contain" />
+            <img src={getCloudinaryUrl('FOOTERLOGO_zyaqbf')} alt="COMSATS Logo" className="h-20 mx-auto mb-6 object-contain" />
           </Link>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Admin Portal</h1>
           <p className="text-slate-500 mt-2 font-medium">Sign in to manage news & events</p>
