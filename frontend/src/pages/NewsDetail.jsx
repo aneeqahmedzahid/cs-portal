@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
+import { getCloudinaryUrl } from '../lib/cloudinary';
 
 export default function NewsDetail() {
   const { id } = useParams();
@@ -50,7 +51,7 @@ export default function NewsDetail() {
       <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center group">
-            <img src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/CSPORTALLOGO.png" alt="COMSATS Logo" className="h-12 w-auto mix-blend-multiply group-hover:scale-105 transition-transform object-contain" />
+            <img src={getCloudinaryUrl('WhatsApp_20Image_202026-04-22_20at_207.03.53_20PM_ldw4ql')} alt="COMSATS Logo" className="h-12 w-auto mix-blend-multiply group-hover:scale-105 transition-transform object-contain" />
           </Link>
           <Link to="/" className="flex items-center gap-2 text-slate-500 hover:text-comsats-blue transition-colors text-sm font-medium">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>

@@ -6,8 +6,22 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { News, Event, Admin, Faculty } = require('./models.cjs');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
+
+// Cloudinary Config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Multer Config for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 app.use(cors());
 app.use(express.json());
 
@@ -267,6 +281,35 @@ app.put('/api/faculty/:id', authMiddleware, async (req, res) => {
     res.json(faculty);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+// --- UPLOAD ROUTE ---
+app.post('/api/upload', authMiddleware, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Upload to Cloudinary using stream
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'cs-portal',
+        resource_type: 'auto'
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return res.status(500).json({ error: 'Cloudinary upload failed' });
+        }
+        res.json({ url: result.secure_url, public_id: result.public_id });
+      }
+    );
+
+    uploadStream.end(req.file.buffer);
+  } catch (err) {
+    console.error('Upload route error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

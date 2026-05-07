@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../lib/api';
+import { uploadToCloudinary } from '../../lib/cloudinary';
 
 export default function NewsManagement() {
   const [news, setNews] = useState([]);
@@ -8,7 +9,9 @@ export default function NewsManagement() {
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({ title: '', content: '', image_url: '', author: '' });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState('');
+  const fileRef = useRef(null);
   const formRef = useRef(null);
 
   const fetchData = useCallback(async () => {
@@ -22,6 +25,17 @@ export default function NewsManagement() {
 
   const openCreate = () => { setEditingItem(null); setFormData({ title: '', content: '', image_url: '', author: '' }); setShowForm(true); };
   const openEdit = (item) => { setEditingItem(item); setFormData({ title: item.title, content: item.content, image_url: item.image_url || '', author: item.author || '' }); setShowForm(true); };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadToCloudinary(file);
+      setFormData(prev => ({ ...prev, image_url: url }));
+    } catch (err) { alert('Upload failed: ' + err.message); }
+    setUploading(false);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -84,8 +98,17 @@ export default function NewsManagement() {
             <div><label className="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-wider">Content</label>
               <textarea value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} rows={5} className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:ring-4 focus:ring-primary/5 outline-none resize-none" /></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label className="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-wider">Image URL (optional)</label>
-                <input value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} placeholder="https://..." className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:ring-4 focus:ring-primary/5 outline-none" /></div>
+              <div>
+                <label className="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-wider">Image</label>
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-[10px] transition-colors disabled:opacity-50">
+                    {uploading ? 'Uploading...' : 'Upload Image'}
+                  </button>
+                  <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                  <input value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} placeholder="Or paste URL..." className="flex-1 px-4 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold text-slate-700 focus:ring-4 focus:ring-primary/5 outline-none" />
+                </div>
+                {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 w-20 h-20 object-cover rounded-lg border border-slate-100" />}
+              </div>
               <div><label className="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-wider">Author</label>
                 <input value={formData.author} onChange={e => setFormData({...formData, author: e.target.value})} placeholder="Author name" className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:ring-4 focus:ring-primary/5 outline-none" /></div>
             </div>

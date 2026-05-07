@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { getCloudinaryUrl } from '../../lib/cloudinary';
 
 export default function AdminSidebar({ collapsed, onToggle, showMobileSidebar, setShowMobileSidebar, activePage, setActivePage, navItems, onLogout }) {
   return (
@@ -13,7 +14,7 @@ export default function AdminSidebar({ collapsed, onToggle, showMobileSidebar, s
         <Link to="/" className="flex-shrink-0">
           <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center">
             <img 
-              src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/CSPORTALLOGO.png" 
+              src={getCloudinaryUrl('WhatsApp_20Image_202026-04-22_20at_207.03.53_20PM_ldw4ql')} 
               alt="Logo" 
               className="w-7 h-7 object-contain brightness-0 invert"
             />

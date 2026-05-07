@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
+import { getCloudinaryUrl } from '../lib/cloudinary';
 import { Grid, Card, CardContent, Typography, Box } from '@mui/material';
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
@@ -123,7 +124,7 @@ We as a team aim to take the department to heights of success and glory and prep
       <nav className="fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <a href="#hero" className="flex items-center group">
-            <img src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/CSPORTALLOGO.png" alt="COMSATS Logo" className="h-24 w-auto mix-blend-multiply group-hover:scale-105 transition-transform object-contain" />
+            <img src={getCloudinaryUrl('WhatsApp_20Image_202026-04-22_20at_207.03.53_20PM_ldw4ql')} alt="COMSATS Logo" className="h-24 w-auto mix-blend-multiply group-hover:scale-105 transition-transform object-contain" />
           </a>
 
           <div className="hidden md:flex gap-8 items-center font-medium text-sm tracking-wide">
@@ -163,7 +164,7 @@ We as a team aim to take the department to heights of success and glory and prep
       <section id="hero" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/481081607_1154567749697495_3877917703510462722_n.jpg"
+            src={getCloudinaryUrl('481081607_1154567749697495_3877917703510462722_n_y2mmd8')}
             alt="Campus Background"
             className="w-full h-full object-cover object-center scale-105 animate-pulse-slow origin-center"
           />
@@ -316,7 +317,7 @@ We as a team aim to take the department to heights of success and glory and prep
       >
         <div className="absolute inset-0">
           <img
-            src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/WhatsApp%20Image%202026-04-22%20at%207.03.53%20PM.jpeg"
+            src={getCloudinaryUrl('WhatsApp_20Image_202026-04-22_20at_207.03.53_20PM_ldw4ql')}
             alt="Quick Access Portals background"
             className="w-full h-full object-cover"
           />
@@ -614,7 +615,7 @@ We as a team aim to take the department to heights of success and glory and prep
           playsInline
           className="absolute inset-0 w-full h-full object-cover blur-sm opacity-60"
         >
-          <source src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/istockphoto-1459585081-640_adpp_is%20(1).mp4" type="video/mp4" />
+          <source src={getCloudinaryUrl('istockphoto-1459585081-640_adpp_is_20_1_uisdbr', 'video')} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-slate-900/50 mix-blend-multiply"></div>
 
@@ -667,7 +668,7 @@ We as a team aim to take the department to heights of success and glory and prep
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
             <div className="col-span-1 md:col-span-1">
-              <img src="/footerlogo.png" alt="COMSATS Logo" className="h-32 mb-6 object-contain" />
+              <img src={getCloudinaryUrl('FOOTERLOGO_zyaqbf')} alt="COMSATS Logo" className="h-32 mb-6 object-contain" />
               <p className="text-slate-400 leading-relaxed font-light">
                 Department of Computer Science<br />
                 COMSATS University Islamabad,<br />

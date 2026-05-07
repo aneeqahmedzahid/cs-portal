@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { useNavigate, Link } from 'react-router-dom';
+import { getCloudinaryUrl } from '../../lib/cloudinary';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export default function AdminLogin() {
         {/* Logo */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-block">
-            <img src="https://latdncjdcwtmtehhmazi.supabase.co/storage/v1/object/public/COMSATS%20CS%20PORTAL%20ASSETS/CSPORTALLOGO.png" alt="COMSATS Logo" className="h-20 mx-auto mb-6 object-contain" />
+            <img src={getCloudinaryUrl('WhatsApp_20Image_202026-04-22_20at_207.03.53_20PM_ldw4ql')} alt="COMSATS Logo" className="h-20 mx-auto mb-6 object-contain" />
           </Link>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Admin Portal</h1>
           <p className="text-slate-500 mt-2 font-medium">Sign in to manage news & events</p>

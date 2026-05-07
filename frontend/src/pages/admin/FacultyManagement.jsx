@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../lib/api';
-import { uploadFacultyImage } from '../../lib/supabase';
+import { uploadToCloudinary } from '../../lib/cloudinary';
 import staticFacultyData from '../../data/facultyData.json';
 
 const DESIGNATIONS = ['Professor', 'Tenured Associate Professor', 'Associate Professor', 'Associate Professor(Tenured)', 'Assistant Professor', 'Senior Engineer', 'Lecturer'];
@@ -27,20 +26,29 @@ export default function FacultyManagement() {
       const apiData = (await api.getFaculty()) || [];
       if (apiData.length > 0) {
         setFaculty(apiData);
-      } else {
-        const mapped = staticFacultyData.map((f, i) => ({
-          id: `static_${i}`,
-          name: f.name,
-          designation: f.designation || 'Lecturer',
-          interests: f.interests || '',
-          image_url: f.image || '',
-          link: f.link || '',
-          _isStatic: true,
-        }));
-        setFaculty(mapped);
+      } else if (staticFacultyData.length > 0) {
+        // Auto-seed to database if empty
+        console.log("Seeding faculty data from JSON to database...");
+        for (const f of staticFacultyData) {
+          try {
+            await api.createFaculty({
+              name: f.name,
+              designation: f.designation || 'Lecturer',
+              interests: f.interests || '',
+              image_url: f.image || '',
+              link: f.link || ''
+            });
+          } catch (e) {
+            console.error("Failed to seed faculty member:", f.name, e);
+          }
+        }
+        // Fetch again after seeding
+        const freshData = await api.getFaculty();
+        setFaculty(freshData || []);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Fetch error:", err);
+      // Last resort fallback to local state only (no seeding)
       const mapped = staticFacultyData.map((f, i) => ({
         id: `static_${i}`,
         name: f.name,
@@ -103,7 +111,7 @@ export default function FacultyManagement() {
       reader.onload = (ev) => setPreviewImg(ev.target.result);
       reader.readAsDataURL(file);
 
-      const publicUrl = await uploadFacultyImage(file);
+      const publicUrl = await uploadToCloudinary(file);
       setFormData(prev => ({ ...prev, image_url: publicUrl }));
       setPreviewImg(publicUrl);
     } catch (err) {
