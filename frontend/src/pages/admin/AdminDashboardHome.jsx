@@ -145,7 +145,7 @@ export default function AdminDashboardHome() {
           </div>
           <div>
             <h2 className="text-lg md:text-xl font-bold text-gray-800">Administrator</h2>
-            <p className="text-xs md:text-sm text-gray-400">CS Department Portal • {localStorage.getItem('admin_email')}</p>
+            <p className="text-xs md:text-sm text-gray-400">CS Department Portal • {sessionStorage.getItem('admin_email')}</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

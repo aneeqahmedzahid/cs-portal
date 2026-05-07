@@ -44,8 +44,6 @@ const facultySchema = new mongoose.Schema({
   interests: { type: String, default: '' },
   image_url: { type: String, default: '' },
   link: { type: String, default: '' },
-  hecApproved: { type: Boolean, default: false },
-  mainContributor: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 }, transformSchema);

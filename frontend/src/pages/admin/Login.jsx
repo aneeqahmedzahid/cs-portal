@@ -12,7 +12,7 @@ export default function AdminLogin() {
 
   useEffect(() => {
     const checkSession = () => {
-      const token = localStorage.getItem('admin_token');
+      const token = sessionStorage.getItem('admin_token');
       if (token) {
         navigate('/admin/dashboard', { replace: true });
       } else {
@@ -30,8 +30,8 @@ export default function AdminLogin() {
     try {
       const data = await api.login(email, password);
       if (data.session && data.session.access_token) {
-        localStorage.setItem('admin_token', data.session.access_token);
-        localStorage.setItem('admin_email', data.session.user.email);
+        sessionStorage.setItem('admin_token', data.session.access_token);
+        sessionStorage.setItem('admin_email', data.session.user.email);
         navigate('/admin/dashboard');
       }
     } catch (err) {

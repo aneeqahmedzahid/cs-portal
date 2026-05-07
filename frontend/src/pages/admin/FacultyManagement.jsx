@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../../lib/api';
 import { uploadFacultyImage } from '../../lib/supabase';
+import staticFacultyData from '../../data/facultyData.json';
 
 const DESIGNATIONS = ['Professor', 'Tenured Associate Professor', 'Associate Professor', 'Associate Professor(Tenured)', 'Assistant Professor', 'Senior Engineer', 'Lecturer'];
 
-const emptyForm = { name: '', designation: 'Lecturer', interests: '', image_url: '', link: '', hecApproved: false, mainContributor: false };
+const emptyForm = { name: '', designation: 'Lecturer', interests: '', image_url: '', link: '' };
 
 export default function FacultyManagement() {
   const [faculty, setFaculty] = useState([]);
@@ -21,7 +22,37 @@ export default function FacultyManagement() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    try { setFaculty((await api.getFaculty()) || []); } catch (err) { console.error(err); }
+    try {
+      const apiData = (await api.getFaculty()) || [];
+      if (apiData.length > 0) {
+        setFaculty(apiData);
+      } else {
+        // Fall back to static JSON data (existing faculty from facultyData.json)
+        const mapped = staticFacultyData.map((f, i) => ({
+          id: `static_${i}`,
+          name: f.name,
+          designation: f.designation || 'Lecturer',
+          interests: f.interests || '',
+          image_url: f.image || '',
+          link: f.link || '',
+          _isStatic: true,
+        }));
+        setFaculty(mapped);
+      }
+    } catch (err) {
+      console.error(err);
+      // On API error, show static data
+      const mapped = staticFacultyData.map((f, i) => ({
+        id: `static_${i}`,
+        name: f.name,
+        designation: f.designation || 'Lecturer',
+        interests: f.interests || '',
+        image_url: f.image || '',
+        link: f.link || '',
+        _isStatic: true,
+      }));
+      setFaculty(mapped);
+    }
     setLoading(false);
   }, []);
 
@@ -42,8 +73,6 @@ export default function FacultyManagement() {
       interests: item.interests || '',
       image_url: item.image_url || '',
       link: item.link || '',
-      hecApproved: item.hecApproved || false,
-      mainContributor: item.mainContributor || false,
     });
     setPreviewImg(item.image_url || '');
     setShowModal(true);
@@ -53,7 +82,6 @@ export default function FacultyManagement() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file');
       return;
@@ -65,12 +93,10 @@ export default function FacultyManagement() {
 
     setUploading(true);
     try {
-      // Show local preview immediately
       const reader = new FileReader();
       reader.onload = (ev) => setPreviewImg(ev.target.result);
       reader.readAsDataURL(file);
 
-      // Upload to Supabase
       const publicUrl = await uploadFacultyImage(file);
       setFormData(prev => ({ ...prev, image_url: publicUrl }));
       setPreviewImg(publicUrl);
@@ -88,9 +114,10 @@ export default function FacultyManagement() {
     }
     setSaving(true);
     try {
-      if (editingItem) {
+      if (editingItem && !editingItem._isStatic) {
         await api.updateFaculty(editingItem.id, formData);
       } else {
+        // Creating new or saving a static entry to the DB
         await api.createFaculty(formData);
       }
       setShowModal(false);
@@ -101,7 +128,11 @@ export default function FacultyManagement() {
     setSaving(false);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, isStatic) => {
+    if (isStatic) {
+      alert('This faculty member is from the static data file. To remove them, edit facultyData.json.');
+      return;
+    }
     if (!confirm('Delete this faculty member?')) return;
     try { await api.deleteFaculty(id); fetchData(); } catch (err) { alert('Error: ' + err.message); }
   };
@@ -151,7 +182,7 @@ export default function FacultyManagement() {
         ))}
       </div>
 
-      {/* Faculty Grid */}
+      {/* Faculty List */}
       <div className="bg-white rounded-[32px] shadow-sm border border-slate-200 overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-20"><div className="w-10 h-10 border-3 border-gray-100 border-t-primary rounded-full animate-spin" /></div>
@@ -169,23 +200,21 @@ export default function FacultyManagement() {
               <div key={item.id} className="p-5 lg:p-6 flex items-center gap-5 hover:bg-slate-50/50 transition-colors group">
                 {/* Photo */}
                 <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100">
-                  {item.image_url ? (
-                    <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                  ) : null}
-                  <div className={`w-full h-full items-center justify-center text-slate-300 text-xl ${item.image_url ? 'hidden' : 'flex'}`}>
-                    <i className="fas fa-user"></i>
-                  </div>
+                  {item.image_url && !item.image_url.startsWith('data:') ? (
+                    <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none'; }} />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300 text-xl">
+                      <i className="fas fa-user"></i>
+                    </div>
+                  )}
                 </div>
 
                 {/* Info */}
                 <div className="flex-grow min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-sm lg:text-base font-black text-slate-800 truncate">{item.name}</h3>
-                    {item.hecApproved && (
-                      <span className="px-2 py-0.5 text-[9px] font-black bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-200">HEC Approved</span>
-                    )}
-                    {item.mainContributor && (
-                      <span className="px-2 py-0.5 text-[9px] font-black bg-amber-50 text-amber-600 rounded-lg border border-amber-200">Main Contributor</span>
+                    {item._isStatic && (
+                      <span className="px-2 py-0.5 text-[9px] font-black bg-slate-50 text-slate-400 rounded-lg border border-slate-200">Static</span>
                     )}
                   </div>
                   <div className="text-xs text-purple-500 font-bold mt-0.5">{item.designation}</div>
@@ -202,7 +231,7 @@ export default function FacultyManagement() {
                   <button onClick={() => openEdit(item)} className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm">
                     <i className="fas fa-edit text-sm"></i>
                   </button>
-                  <button onClick={() => handleDelete(item.id)} className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-rose-300 hover:bg-rose-500 hover:text-white hover:border-rose-600 transition-all shadow-sm">
+                  <button onClick={() => handleDelete(item.id, item._isStatic)} className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-rose-300 hover:bg-rose-500 hover:text-white hover:border-rose-600 transition-all shadow-sm">
                     <i className="fas fa-trash-can text-sm"></i>
                   </button>
                 </div>
@@ -230,7 +259,7 @@ export default function FacultyManagement() {
               {/* Image Upload Section */}
               <div className="flex flex-col items-center space-y-3">
                 <div className="w-28 h-28 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative">
-                  {previewImg ? (
+                  {previewImg && !previewImg.startsWith('data:image/png;base64') ? (
                     <img src={previewImg} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-center">
@@ -265,7 +294,6 @@ export default function FacultyManagement() {
                   )}
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                {/* OR paste URL */}
                 <div className="w-full">
                   <label className="block text-[10px] font-black text-slate-400 mb-1.5 uppercase tracking-wider text-center">Or paste image URL</label>
                   <input
@@ -301,18 +329,6 @@ export default function FacultyManagement() {
               <div>
                 <label className="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-wider">Profile Link</label>
                 <input value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} placeholder="https://www.cuiatd.edu.pk/faculty/..." className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:ring-4 focus:ring-primary/5 outline-none" />
-              </div>
-
-              {/* Toggle Fields */}
-              <div className="flex gap-4">
-                <label className="flex items-center gap-3 cursor-pointer bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100 flex-1">
-                  <input type="checkbox" checked={formData.hecApproved} onChange={e => setFormData({...formData, hecApproved: e.target.checked})} className="w-4 h-4 rounded accent-emerald-500" />
-                  <span className="text-xs font-bold text-slate-600">HEC Approved</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100 flex-1">
-                  <input type="checkbox" checked={formData.mainContributor} onChange={e => setFormData({...formData, mainContributor: e.target.checked})} className="w-4 h-4 rounded accent-amber-500" />
-                  <span className="text-xs font-bold text-slate-600">Main Contributor</span>
-                </label>
               </div>
 
               {/* Buttons */}

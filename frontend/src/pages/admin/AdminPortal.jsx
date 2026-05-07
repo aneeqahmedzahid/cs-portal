@@ -25,18 +25,18 @@ export default function AdminPortal() {
   const [activePage, setActivePage] = useState('dashboard');
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
+    const token = sessionStorage.getItem('admin_token');
     if (!token) {
       navigate('/admin/login', { replace: true });
     } else {
-      setUserEmail(localStorage.getItem('admin_email') || 'Admin');
+      setUserEmail(sessionStorage.getItem('admin_email') || 'Admin');
       setSessionLoading(false);
     }
   }, [navigate]);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_email');
+    sessionStorage.removeItem('admin_token');
+    sessionStorage.removeItem('admin_email');
     navigate('/admin/login');
   }, [navigate]);
 
