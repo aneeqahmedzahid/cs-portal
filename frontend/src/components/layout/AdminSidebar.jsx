@@ -42,6 +42,18 @@ export default function AdminSidebar({ collapsed, onToggle, showMobileSidebar, s
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-2 sidebar-nav mt-2">
+        {/* Go Home Button */}
+        <Link 
+          to="/" 
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 outline-none cursor-pointer mb-1 text-white/90 hover:bg-white/15 hover:text-white"
+          title={collapsed && !showMobileSidebar ? "Go Home" : ""}
+        >
+          <i className="fas fa-home text-sm w-5 text-center flex-shrink-0"></i>
+          {(!collapsed || showMobileSidebar) && (
+            <span className="text-sm font-medium whitespace-nowrap overflow-hidden flex-1">Go Home</span>
+          )}
+        </Link>
+        
         {navItems.map(item => {
           const isActive = activePage === item.id;
           return (

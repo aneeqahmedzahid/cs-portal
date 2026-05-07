@@ -113,6 +113,13 @@ export default function AdminLogin() {
               ) : 'Sign In'}
             </button>
           </form>
+
+          <div className="mt-6 text-center">
+            <Link to="/" className="text-sm font-medium text-slate-500 hover:text-comsats-blue transition-colors inline-flex items-center gap-2">
+              <i className="fas fa-arrow-left text-xs"></i>
+              Go back to homepage
+            </Link>
+          </div>
         </div>
 
         <p className="text-center text-slate-400 text-xs mt-8">

@@ -24,7 +24,21 @@ export default function FacultyManagement() {
     setLoading(true);
     try {
       const apiData = (await api.getFaculty()) || [];
-      setFaculty(apiData);
+      
+      // Sort by designation priority
+      const sortedData = [...apiData].sort((a, b) => {
+        const priorityA = DESIGNATIONS.indexOf(a.designation);
+        const priorityB = DESIGNATIONS.indexOf(b.designation);
+        
+        // If designation not found in DESIGNATIONS, put it at the end
+        const pA = priorityA === -1 ? 99 : priorityA;
+        const pB = priorityB === -1 ? 99 : priorityB;
+        
+        if (pA !== pB) return pA - pB;
+        return a.name.localeCompare(b.name); // Alphabetical within same designation
+      });
+
+      setFaculty(sortedData);
     } catch (err) {
       console.error('Failed to fetch faculty from database:', err);
       setFaculty([]);

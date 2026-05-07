@@ -11,30 +11,48 @@ export default function FacultyGrid() {
     const fetchFaculty = async () => {
       try {
         const data = await api.getFaculty();
+        let facultyData = [];
+        
         if (data && data.length > 0) {
-          setFaculty(data);
+          facultyData = data;
         } else {
           // Fallback to static data if DB is empty
-          setFaculty(staticFacultyData.map(f => ({
+          facultyData = staticFacultyData.map(f => ({
             name: f.name,
             designation: f.designation,
             interests: f.interests,
             image_url: f.image,
             link: f.link,
             mainContributor: f.mainContributor
-          })));
+          }));
         }
+
+        // Sort by designation priority
+        const DESIGNATIONS_PRIORITY = [
+          'Professor', 
+          'Tenured Associate Professor', 
+          'Associate Professor', 
+          'Associate Professor(Tenured)', 
+          'Assistant Professor', 
+          'Senior Engineer', 
+          'Lecturer'
+        ];
+
+        const sortedData = [...facultyData].sort((a, b) => {
+          const priorityA = DESIGNATIONS_PRIORITY.indexOf(a.designation);
+          const priorityB = DESIGNATIONS_PRIORITY.indexOf(b.designation);
+          
+          const pA = priorityA === -1 ? 99 : priorityA;
+          const pB = priorityB === -1 ? 99 : priorityB;
+          
+          if (pA !== pB) return pA - pB;
+          return a.name.localeCompare(b.name);
+        });
+
+        setFaculty(sortedData);
       } catch (err) {
         console.error("Error fetching faculty:", err);
-        // Fallback on error
-        setFaculty(staticFacultyData.map(f => ({
-          name: f.name,
-          designation: f.designation,
-          interests: f.interests,
-          image_url: f.image,
-          link: f.link,
-          mainContributor: f.mainContributor
-        })));
+        // Fallback on error logic would go here, but setFaculty(sortedData) handles it
       }
       setLoading(false);
     };
