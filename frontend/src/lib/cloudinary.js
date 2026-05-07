@@ -1,7 +1,7 @@
 // Cloudinary configuration and helper functions
 const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'YOUR_CLOUD_NAME';
 const apiKey = import.meta.env.VITE_CLOUDINARY_API_KEY || '499438575588685';
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5001/api');
 
 export const getCloudinaryUrl = (publicId, type = 'image') => {
   if (!publicId) return '';
