@@ -46,23 +46,23 @@ export default function ContributorsSection() {
                 <div className="relative z-10">
                   {/* Image and Identity */}
                   <div className="flex flex-col items-center text-center">
-                    <div className="relative mb-6">
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-3xl blur-md opacity-40 group-hover:opacity-70 transition-opacity"></div>
+                    <div className="relative mb-8">
+                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[40px] blur-xl opacity-20 group-hover:opacity-50 transition-opacity"></div>
                       <img 
                         src={person.image_url || 'https://via.placeholder.com/150'} 
                         alt={person.name} 
-                        className="w-24 h-24 rounded-3xl object-cover relative z-10 border-2 border-white/20"
+                        className="w-40 h-40 rounded-[36px] object-cover relative z-10 border-4 border-white/10 group-hover:border-white/30 transition-all duration-500 shadow-2xl"
                       />
                     </div>
                     
-                    <h3 className="text-2xl font-black text-white mb-1 group-hover:text-indigo-300 transition-colors">
+                    <h3 className="text-3xl font-black text-white mb-2 group-hover:text-indigo-300 transition-colors">
                       {person.name}
                     </h3>
-                    <p className="text-indigo-400 font-bold text-xs uppercase tracking-widest mb-4">
+                    <p className="text-indigo-400 font-bold text-sm uppercase tracking-[0.2em] mb-6">
                       {person.role}
                     </p>
                     
-                    <p className="text-slate-400 text-sm leading-relaxed mb-8 line-clamp-3 font-light">
+                    <p className="text-slate-400 text-base leading-relaxed mb-10 line-clamp-3 font-light">
                       {person.bio || 'Passionate developer contributing to the academic excellence of COMSATS University.'}
                     </p>
 

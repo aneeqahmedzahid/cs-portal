@@ -27,8 +27,15 @@ export async function uploadToCloudinary(file) {
   });
 
   if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || 'Failed to upload image');
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const error = await res.json();
+      throw new Error(error.error || error.details || 'Failed to upload image');
+    } else {
+      const text = await res.text();
+      console.error('Server error response:', text);
+      throw new Error('Server returned an error (500). Please check backend logs.');
+    }
   }
 
   const data = await res.json();

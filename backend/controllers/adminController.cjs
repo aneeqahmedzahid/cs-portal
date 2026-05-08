@@ -72,24 +72,35 @@ const uploadFile = async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'cs-portal',
-        resource_type: 'auto'
-      },
-      (error, result) => {
-        if (error) {
-          console.error('Cloudinary upload error:', error);
-          return res.status(500).json({ error: 'Cloudinary upload failed' });
-        }
-        res.json({ url: result.secure_url, public_id: result.public_id });
-      }
-    );
+    console.log(`Uploading file: ${req.file.originalname}, size: ${req.file.size}`);
 
-    uploadStream.end(req.file.buffer);
+    // Wrap Cloudinary upload in a Promise for Vercel serverless stability
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'cs-portal',
+          resource_type: 'auto'
+        },
+        (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload_stream error:', error);
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+      uploadStream.end(req.file.buffer);
+    });
+
+    console.log('Upload successful:', result.secure_url);
+    res.json({ url: result.secure_url, public_id: result.public_id });
   } catch (err) {
-    console.error('Upload route error:', err);
-    res.status(500).json({ error: err.message });
+    console.error('Upload route catch error:', err);
+    res.status(500).json({ 
+      error: 'Upload failed. Please check backend logs.',
+      details: err.message 
+    });
   }
 };
 
