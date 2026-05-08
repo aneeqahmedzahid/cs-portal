@@ -8,6 +8,7 @@ import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import HubRoundedIcon from '@mui/icons-material/HubRounded';
 import PsychologyRoundedIcon from '@mui/icons-material/PsychologyRounded';
 import FacultyGrid from '../components/FacultyGrid';
+import ContributorsSection from '../components/ContributorsSection';
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
