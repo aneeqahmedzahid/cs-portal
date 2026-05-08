@@ -134,6 +134,7 @@ We as a team aim to take the department to heights of success and glory and prep
             <a href="#news-events" className="text-slate-600 hover:text-comsats-blue transition-colors">News & Events</a>
             <a href="#portals" className="text-slate-600 hover:text-comsats-blue transition-colors">Portals</a>
             <a href="#faculty" className="text-slate-600 hover:text-comsats-blue transition-colors">Faculty</a>
+            <a href="#contributors" className="text-slate-600 hover:text-comsats-blue transition-colors">Contributors</a>
             <a href="#newsletter" className="px-4 py-2 border border-slate-300 text-slate-600 rounded-full hover:border-comsats-blue hover:text-comsats-blue transition-all text-xs">Subscribe</a>
             <Link to="/admin/login" className="px-5 py-2.5 bg-comsats-blue text-white rounded-full hover:bg-comsats-blue-dark hover:shadow-lg hover:shadow-comsats-blue/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -153,6 +154,7 @@ We as a team aim to take the department to heights of success and glory and prep
             <a href="#news-events" className="font-medium text-slate-800" onClick={() => setIsMenuOpen(false)}>News & Events</a>
             <a href="#portals" className="font-medium text-slate-800" onClick={() => setIsMenuOpen(false)}>Portals</a>
             <a href="#faculty" className="font-medium text-slate-800" onClick={() => setIsMenuOpen(false)}>Faculty</a>
+            <a href="#contributors" className="font-medium text-slate-800" onClick={() => setIsMenuOpen(false)}>Contributors</a>
             <a href="#newsletter" className="font-medium text-comsats-blue" onClick={() => setIsMenuOpen(false)}>Subscribe</a>
             <Link to="/admin/login" className="font-medium text-slate-500 text-sm flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -547,7 +549,7 @@ We as a team aim to take the department to heights of success and glory and prep
           {/* Animated decorative circles */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:scale-110 group-hover:bg-teal-400/20 transition-all duration-1000"></div>
           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-400/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 group-hover:scale-110 group-hover:bg-blue-400/20 transition-all duration-1000"></div>
-          
+
           <div className="relative z-10 w-full max-w-sm flex flex-col items-center">
             <div className="relative mx-auto w-64 h-64 md:w-80 md:h-80 rounded-full border-[6px] border-white/10 p-2 shadow-[0_0_60px_rgba(31,92,169,0.5)] transition-all duration-700 group-hover:scale-105 group-hover:border-white/30 hover:rotate-3 cursor-pointer">
               <div className="w-full h-full rounded-full overflow-hidden">
@@ -571,7 +573,7 @@ We as a team aim to take the department to heights of success and glory and prep
               <p className="text-blue-100/90 leading-relaxed font-light mb-10 text-lg">
                 Leading the department with a focus on academic strength, research excellence, and modern computing education.
               </p>
-              
+
               <a href="https://www.cuiatd.edu.pk/faculty/dr-zia-ur-rehman/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-comsats-blue font-bold hover:bg-slate-50 transition-all shadow-[0_10px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:-translate-y-1.5 group/btn">
                 View Full Profile
                 <svg className="w-5 h-5 transform transition-transform group-hover/btn:translate-x-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
@@ -584,12 +586,12 @@ We as a team aim to take the department to heights of success and glory and prep
         <div className="lg:w-7/12 bg-slate-50 relative p-10 md:p-16 xl:p-24 flex flex-col justify-center">
           {/* Subtle background pattern */}
           <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1f5ca9 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
-          
+
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold text-slate-900 tracking-tight mb-12 leading-[1.1]">
               A Vision For <span className="text-transparent bg-clip-text bg-gradient-to-r from-comsats-blue to-teal-500">Excellence</span> In Computer Science
             </h2>
-            
+
             <div className="space-y-6 text-slate-600 text-lg md:text-xl leading-relaxed font-light">
               {hodMessage.split('\n\n').map((paragraph, index) => (
                 <p key={index} className="relative pl-6 border-l-[3px] border-transparent hover:border-teal-400 hover:text-slate-800 transition-all duration-300">
@@ -715,7 +717,7 @@ We as a team aim to take the department to heights of success and glory and prep
           <div className="pt-8 border-t border-slate-800 text-center text-slate-500 text-sm font-light">
             <p>&copy; {new Date().getFullYear()} COMSATS University Islamabad, Abbottabad Campus. All rights reserved.</p>
             <p className="mt-3 text-slate-300 text-sm tracking-wide">
-              Developed by <a href="https://pk.linkedin.com/in/aneeqahmedzahid" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors">Aneeq Ahmed Zahid</a> (SP24-BSE-105), CUI Abbottabad and Computer Science Students
+              Developed by <a href="https://pk.linkedin.com/in/aneeqahmedzahid" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors">Aneeq Ahmed Zahid</a> (SP24-BSE-105), CUI Abbottabad
             </p>
           </div>
         </div>

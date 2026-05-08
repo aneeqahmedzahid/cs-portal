@@ -14,7 +14,7 @@ export default function ContributorsSection() {
   if (loading || contributors.length === 0) return null;
 
   return (
-    <section className="py-32 relative overflow-hidden bg-gradient-to-b from-slate-950 to-slate-900">
+    <section id="contributors" className="py-32 relative overflow-hidden bg-gradient-to-b from-slate-950 to-slate-900">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px] animate-pulse"></div>
