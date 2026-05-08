@@ -28,7 +28,7 @@ export default function ContributorsManagement() {
       const token = sessionStorage.getItem('admin_token');
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formDataUpload
