@@ -27,6 +27,12 @@ cloudinary.config({
 app.use(cors());
 app.use(express.json());
 
+// Request logger
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
 // Database connection middleware
 app.use(async (req, res, next) => {
   try {
