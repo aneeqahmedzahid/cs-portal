@@ -1,36 +1,25 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { api } from '../../lib/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAdmins } from '../../hooks/useAdmins';
 
 export default function AdminsManagement() {
-  const [admins, setAdmins] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { admins, loading, saving, createAdmin, deleteAdmin } = useAdmins();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const formRef = useRef(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try { setAdmins((await api.getAdmins()) || []); } catch (err) { console.error(err); }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
   useEffect(() => { if (showForm && formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [showForm]);
 
   const handleSave = async () => {
-    setSaving(true);
     try {
-      await api.createAdmin(formData);
-      setShowForm(false); fetchData();
+      await createAdmin(formData);
+      setShowForm(false);
     } catch (err) { alert('Error: ' + err.message); }
-    setSaving(false);
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this admin?')) return;
-    try { await api.deleteAdmin(id); fetchData(); } catch (err) { alert('Error: ' + err.message); }
+    try { await deleteAdmin(id); } catch (err) { alert('Error: ' + err.message); }
   };
 
   const filtered = admins.filter(a => a.email?.toLowerCase().includes(search.toLowerCase()));

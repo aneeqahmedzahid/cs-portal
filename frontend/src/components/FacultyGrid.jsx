@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../lib/api';
+import { api } from '../services/api';
 import staticFacultyData from '../data/facultyData.json';
 
 export default function FacultyGrid() {

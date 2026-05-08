@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../lib/api';
+import { api } from '../services/api';
 import { getCloudinaryUrl } from '../lib/cloudinary';
 import { Grid, Card, CardContent, Typography, Box } from '@mui/material';
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';

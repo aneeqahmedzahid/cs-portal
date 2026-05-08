@@ -1,26 +1,17 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { api } from '../../lib/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { useEvents } from '../../hooks/useEvents';
 import { uploadToCloudinary } from '../../lib/cloudinary';
 
 export default function EventsManagement() {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { events, loading, saving, createEvent, updateEvent, deleteEvent } = useEvents();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({ title: '', description: '', image_url: '', author: '', event_date: '', location: '' });
-  const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState('');
   const fileRef = useRef(null);
   const formRef = useRef(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try { setEvents((await api.getEvents()) || []); } catch (err) { console.error(err); }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
   useEffect(() => { if (showForm && formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [showForm]);
 
   const openCreate = () => { setEditingItem(null); setFormData({ title: '', description: '', image_url: '', author: '', event_date: '', location: '' }); setShowForm(true); };
@@ -42,19 +33,17 @@ export default function EventsManagement() {
   };
 
   const handleSave = async () => {
-    setSaving(true);
     try {
       const payload = { title: formData.title, description: formData.description, image_url: formData.image_url || null, author: formData.author, event_date: formData.event_date, location: formData.location };
-      if (editingItem) await api.updateEvent(editingItem.id, payload);
-      else await api.createEvent(payload);
-      setShowForm(false); fetchData();
+      if (editingItem) await updateEvent(editingItem.id, payload);
+      else await createEvent(payload);
+      setShowForm(false);
     } catch (err) { alert('Error: ' + err.message); }
-    setSaving(false);
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this event?')) return;
-    try { await api.deleteEvent(id); fetchData(); } catch (err) { alert('Error: ' + err.message); }
+    try { await deleteEvent(id); } catch (err) { alert('Error: ' + err.message); }
   };
 
   const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';

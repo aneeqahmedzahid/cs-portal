@@ -1,13 +1,17 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { News, Event, Admin, Faculty } = require('./models.cjs');
-const multer = require('multer');
+const mongoose = require('mongoose');
 const cloudinary = require('cloudinary').v2;
+const connectToDatabase = require('./config/db.cjs');
+const errorMiddleware = require('./middleware/errorMiddleware.cjs');
+
+// Import routes
+const newsRoutes = require('./routes/newsRoutes.cjs');
+const eventRoutes = require('./routes/eventRoutes.cjs');
+const facultyRoutes = require('./routes/facultyRoutes.cjs');
+const adminRoutes = require('./routes/adminRoutes.cjs');
 
 const app = express();
 
@@ -18,64 +22,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Multer Config for memory storage
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-
-const serializeDocument = (doc) => {
-  if (!doc) return doc;
-
-  const serialized = {
-    ...doc,
-    id: doc._id?.toString?.() || doc.id
-  };
-
-  delete serialized._id;
-  delete serialized.__v;
-  return serialized;
-};
-
-// Connect to MongoDB
-let cachedDb = null;
-let connectionPromise = null;
-async function connectToDatabase() {
-  if (cachedDb) return cachedDb;
-  if (connectionPromise) return connectionPromise;
-  if (!process.env.MONGO_URI) {
-    throw new Error('MONGO_URI is not defined in environment variables');
-  }
-
-  connectionPromise = mongoose.connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 5000,
-    connectTimeoutMS: 5000
-  });
-
-  try {
-    const db = await connectionPromise;
-    cachedDb = db;
-    return db;
-  } catch (error) {
-    connectionPromise = null;
-    throw error;
-  }
-}
-
-// Simple health check
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    message: 'Server is running',
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
-  });
-});
-
-// Middleware to ensure DB connection
+// Database connection middleware
 app.use(async (req, res, next) => {
   try {
     await connectToDatabase();
@@ -86,241 +37,25 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Auth Middleware
-const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (ex) {
-    res.status(400).json({ error: 'Invalid token.' });
-  }
-};
-
-// --- AUTH ROUTES ---
-app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const admin = await Admin.findOne({ email });
-    if (!admin) return res.status(400).json({ error: 'Invalid email or password.' });
-
-    const validPassword = await bcrypt.compare(password, admin.password);
-    if (!validPassword) return res.status(400).json({ error: 'Invalid email or password.' });
-
-    const token = jwt.sign({ id: admin._id, email: admin.email }, JWT_SECRET, { expiresIn: '1d' });
-    res.json({ session: { access_token: token, user: { email: admin.email, id: admin._id } } });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Server is running',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
 });
 
-// --- NEWS ROUTES ---
-app.get('/api/news', async (req, res) => {
-  try {
-    const news = await News.find().sort({ created_at: -1 }).lean();
-    res.json(news.map(serializeDocument));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Routes
+app.use('/api/news', newsRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/faculty', facultyRoutes);
+app.use('/api', adminRoutes); // Handles /api/auth/login, /api/admins, /api/upload
 
-app.get('/api/news/:id', async (req, res) => {
-  try {
-    const news = await News.findById(req.params.id).lean();
-    if (!news) return res.status(404).json({ error: 'Not found' });
-    res.json(serializeDocument(news));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Error Handler
+app.use(errorMiddleware);
 
-app.post('/api/news', authMiddleware, async (req, res) => {
-  try {
-    const news = new News(req.body);
-    await news.save();
-    res.status(201).json(news);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.put('/api/news/:id', authMiddleware, async (req, res) => {
-  try {
-    req.body.updated_at = Date.now();
-    const news = await News.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(news);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.delete('/api/news/:id', authMiddleware, async (req, res) => {
-  try {
-    await News.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// --- EVENT ROUTES ---
-app.get('/api/events', async (req, res) => {
-  try {
-    const events = await Event.find().sort({ event_date: 1 }).lean();
-    res.json(events.map(serializeDocument));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/events/:id', async (req, res) => {
-  try {
-    const event = await Event.findById(req.params.id).lean();
-    if (!event) return res.status(404).json({ error: 'Not found' });
-    res.json(serializeDocument(event));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/events', authMiddleware, async (req, res) => {
-  try {
-    const event = new Event(req.body);
-    await event.save();
-    res.status(201).json(event);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.put('/api/events/:id', authMiddleware, async (req, res) => {
-  try {
-    req.body.updated_at = Date.now();
-    const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(event);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.delete('/api/events/:id', authMiddleware, async (req, res) => {
-  try {
-    await Event.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// --- ADMIN ROUTES ---
-app.get('/api/admins', authMiddleware, async (req, res) => {
-  try {
-    const admins = await Admin.find({}, '-password').sort({ created_at: -1 }).lean();
-    res.json(admins.map(serializeDocument));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/admins', authMiddleware, async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const existing = await Admin.findOne({ email });
-    if (existing) return res.status(400).json({ error: 'Admin already exists' });
-    
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    
-    const admin = new Admin({ email, password: hashedPassword });
-    await admin.save();
-    
-    const adminWithoutPassword = admin.toJSON();
-    delete adminWithoutPassword.password;
-    res.status(201).json(adminWithoutPassword);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.delete('/api/admins/:id', authMiddleware, async (req, res) => {
-  try {
-    await Admin.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// --- FACULTY ROUTES ---
-app.get('/api/faculty', async (req, res) => {
-  try {
-    const faculty = await Faculty.find().sort({ name: 1 }).lean();
-    res.json(faculty.map(serializeDocument));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/faculty', authMiddleware, async (req, res) => {
-  try {
-    const faculty = new Faculty(req.body);
-    await faculty.save();
-    res.status(201).json(faculty);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.put('/api/faculty/:id', authMiddleware, async (req, res) => {
-  try {
-    req.body.updated_at = Date.now();
-    const faculty = await Faculty.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!faculty) return res.status(404).json({ error: 'Faculty not found' });
-    res.json(faculty);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// --- UPLOAD ROUTE ---
-app.post('/api/upload', authMiddleware, upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    // Upload to Cloudinary using stream
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'cs-portal',
-        resource_type: 'auto'
-      },
-      (error, result) => {
-        if (error) {
-          console.error('Cloudinary upload error:', error);
-          return res.status(500).json({ error: 'Cloudinary upload failed' });
-        }
-        res.json({ url: result.secure_url, public_id: result.public_id });
-      }
-    );
-
-    uploadStream.end(req.file.buffer);
-  } catch (err) {
-    console.error('Upload route error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.delete('/api/faculty/:id', authMiddleware, async (req, res) => {
-  try {
-    await Faculty.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+const PORT = process.env.PORT || 5000;
 
 if (require.main === module) {
   app.listen(PORT, () => {

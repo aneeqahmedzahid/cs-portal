@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/layout/AdminLayout.jsx';
-import { api } from '../../lib/api';
+import { api } from '../../services/api';
 
 // Lazy imports for pages
 import AdminDashboardHome from './AdminDashboardHome.jsx';

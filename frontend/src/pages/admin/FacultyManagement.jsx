@@ -1,52 +1,20 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { api } from '../../lib/api';
-import { uploadToCloudinary } from '../../lib/cloudinary';
+import React, { useState, useEffect, useRef } from 'react';
+import { useFaculty } from '../../hooks/useFaculty';
 
 const DESIGNATIONS = ['Professor', 'Tenured Associate Professor', 'Associate Professor', 'Associate Professor(Tenured)', 'Assistant Professor', 'Senior Engineer', 'Lecturer'];
 
 const emptyForm = { name: '', designation: 'Lecturer', interests: '', image_url: '', link: '' };
 
 export default function FacultyManagement() {
-  const [faculty, setFaculty] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { faculty, loading, saving, uploading, createFaculty, updateFaculty, deleteFaculty, uploadImage } = useFaculty();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({ ...emptyForm });
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState('');
   const [filterDesignation, setFilterDesignation] = useState('all');
   const [previewImg, setPreviewImg] = useState('');
   const fileRef = useRef(null);
   const formRef = useRef(null);
-
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const apiData = (await api.getFaculty()) || [];
-      
-      // Sort by designation priority
-      const sortedData = [...apiData].sort((a, b) => {
-        const priorityA = DESIGNATIONS.indexOf(a.designation);
-        const priorityB = DESIGNATIONS.indexOf(b.designation);
-        
-        // If designation not found in DESIGNATIONS, put it at the end
-        const pA = priorityA === -1 ? 99 : priorityA;
-        const pB = priorityB === -1 ? 99 : priorityB;
-        
-        if (pA !== pB) return pA - pB;
-        return a.name.localeCompare(b.name); // Alphabetical within same designation
-      });
-
-      setFaculty(sortedData);
-    } catch (err) {
-      console.error('Failed to fetch faculty from database:', err);
-      setFaculty([]);
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
 
   // Auto-scroll to form when it opens
   useEffect(() => {
@@ -88,20 +56,18 @@ export default function FacultyManagement() {
       return;
     }
 
-    setUploading(true);
     try {
       const reader = new FileReader();
       reader.onload = (ev) => setPreviewImg(ev.target.result);
       reader.readAsDataURL(file);
 
-      const publicUrl = await uploadToCloudinary(file);
+      const publicUrl = await uploadImage(file);
       setFormData(prev => ({ ...prev, image_url: publicUrl }));
       setPreviewImg(publicUrl);
     } catch (err) {
       alert('Upload failed: ' + err.message);
       setPreviewImg(formData.image_url);
     }
-    setUploading(false);
   };
 
   const handleSave = async () => {
@@ -109,19 +75,16 @@ export default function FacultyManagement() {
       alert('Name and Designation are required');
       return;
     }
-    setSaving(true);
     try {
       if (editingItem && !editingItem._isStatic) {
-        await api.updateFaculty(editingItem.id, formData);
+        await updateFaculty(editingItem.id, formData);
       } else {
-        await api.createFaculty(formData);
+        await createFaculty(formData);
       }
       setShowForm(false);
-      fetchData();
     } catch (err) {
       alert('Error: ' + err.message);
     }
-    setSaving(false);
   };
 
   const handleDelete = async (id, isStatic) => {
@@ -130,7 +93,7 @@ export default function FacultyManagement() {
       return;
     }
     if (!confirm('Delete this faculty member?')) return;
-    try { await api.deleteFaculty(id); fetchData(); } catch (err) { alert('Error: ' + err.message); }
+    try { await deleteFaculty(id); } catch (err) { alert('Error: ' + err.message); }
   };
 
   const filtered = faculty.filter(f => {

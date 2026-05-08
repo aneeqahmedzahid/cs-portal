@@ -1,26 +1,15 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { api } from '../../lib/api';
-import { uploadToCloudinary } from '../../lib/cloudinary';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNews } from '../../hooks/useNews';
 
 export default function NewsManagement() {
-  const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { news, loading, saving, uploading, createNews, updateNews, deleteNews, uploadImage } = useNews();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({ title: '', content: '', image_url: '', author: '' });
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState('');
   const fileRef = useRef(null);
   const formRef = useRef(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try { setNews((await api.getNews()) || []); } catch (err) { console.error(err); }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
   useEffect(() => { if (showForm && formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [showForm]);
 
   const openCreate = () => { setEditingItem(null); setFormData({ title: '', content: '', image_url: '', author: '' }); setShowForm(true); };
@@ -29,27 +18,23 @@ export default function NewsManagement() {
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
     try {
-      const url = await uploadToCloudinary(file);
+      const url = await uploadImage(file);
       setFormData(prev => ({ ...prev, image_url: url }));
     } catch (err) { alert('Upload failed: ' + err.message); }
-    setUploading(false);
   };
 
   const handleSave = async () => {
-    setSaving(true);
     try {
-      if (editingItem) await api.updateNews(editingItem.id, formData);
-      else await api.createNews(formData);
-      setShowForm(false); fetchData();
+      if (editingItem) await updateNews(editingItem.id, formData);
+      else await createNews(formData);
+      setShowForm(false);
     } catch (err) { alert('Error: ' + err.message); }
-    setSaving(false);
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this news article?')) return;
-    try { await api.deleteNews(id); fetchData(); } catch (err) { alert('Error: ' + err.message); }
+    try { await deleteNews(id); } catch (err) { alert('Error: ' + err.message); }
   };
 
   const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
