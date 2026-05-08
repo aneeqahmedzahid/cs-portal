@@ -69,12 +69,13 @@ We as a team aim to take the department to heights of success and glory and prep
 
   const portals = [
     {
-      title: "CS Department Official",
-      desc: "Visit the official webpage of the Department of Computer Science.",
+      title: "FYP Portal",
+      desc: "Centralized management system for Final Year Projects. Track your progress and submissions.",
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
       ),
-      link: "https://www.cuiatd.edu.pk/computer-science/"
+      link: "#",
+      status: "Coming Soon"
     },
     {
       title: "Student Portal",
@@ -418,9 +419,16 @@ We as a team aim to take the department to heights of success and glory and prep
                       >
                         {portal.icon}
                       </Box>
-                      <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold', color: '#0f172a', mb: 1.5, transition: 'color 0.3s ease', '.MuiCard-root:hover &': { color: '#1f5ca9' } }}>
-                        {portal.title}
-                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                        <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold', color: '#0f172a', transition: 'color 0.3s ease', '.MuiCard-root:hover &': { color: '#1f5ca9' } }}>
+                          {portal.title}
+                        </Typography>
+                        {portal.status && (
+                          <Box sx={{ bgcolor: '#fef3c7', color: '#92400e', px: 1.5, py: 0.5, borderRadius: 'full', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', border: '1px solid #fde68a' }}>
+                            {portal.status}
+                          </Box>
+                        )}
+                      </Box>
                       <Typography variant="body1" sx={{ color: '#475569', lineHeight: 1.7, flexGrow: 1 }}>
                         {portal.desc}
                       </Typography>
