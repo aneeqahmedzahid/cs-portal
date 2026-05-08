@@ -185,5 +185,18 @@ export const api = {
       headers: getAuthHeaders()
     });
     return handleResponse(res);
+  },
+
+  // Upload
+  uploadImage: async (file) => {
+    const token = sessionStorage.getItem('admin_token');
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    return handleResponse(res);
   }
 };

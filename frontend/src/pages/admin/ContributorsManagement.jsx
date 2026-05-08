@@ -21,21 +21,12 @@ export default function ContributorsManagement() {
     if (!file) return;
     setUploading(true);
     try {
-      const uploadData = new FormData();
-      uploadData.append('file', file);
-      const res = await api.createContributor({ uploadOnly: true, file }); // We need an upload helper
-      // Wait, let's use the existing upload logic
-      const token = sessionStorage.getItem('admin_token');
-      const formDataUpload = new FormData();
-      formDataUpload.append('file', file);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/upload`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formDataUpload
-      });
-      const data = await response.json();
+      const data = await api.uploadImage(file);
       setFormData(prev => ({ ...prev, image_url: data.url }));
-    } catch (err) { alert('Upload failed'); }
+    } catch (err) { 
+      console.error(err);
+      alert('Upload failed: ' + err.message); 
+    }
     setUploading(false);
   };
 

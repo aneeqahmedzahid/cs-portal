@@ -1,6 +1,12 @@
 import React from 'react';
 import { useContributors } from '../hooks/useContributors';
 
+const ensureAbsoluteUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `https://${url}`;
+};
+
 export default function ContributorsSection() {
   const { contributors, loading } = useContributors();
 
@@ -63,17 +69,17 @@ export default function ContributorsSection() {
                     {/* Social Links */}
                     <div className="flex items-center gap-4">
                       {person.github && (
-                        <a href={person.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white hover:text-slate-900 transition-all duration-300">
+                        <a href={ensureAbsoluteUrl(person.github)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white hover:text-slate-900 transition-all duration-300">
                           <i className="fab fa-github text-lg"></i>
                         </a>
                       )}
                       {person.linkedin && (
-                        <a href={person.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-[#0077b5] hover:text-white transition-all duration-300">
+                        <a href={ensureAbsoluteUrl(person.linkedin)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-[#0077b5] hover:text-white transition-all duration-300">
                           <i className="fab fa-linkedin-in text-lg"></i>
                         </a>
                       )}
                       {person.portfolio && (
-                        <a href={person.portfolio} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-indigo-600 hover:text-white transition-all duration-300">
+                        <a href={ensureAbsoluteUrl(person.portfolio)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-indigo-600 hover:text-white transition-all duration-300">
                           <i className="fas fa-globe text-lg"></i>
                         </a>
                       )}
