@@ -34,62 +34,51 @@ export default function ContributorsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 max-w-5xl mx-auto gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {contributors.map((person) => (
             <div key={person._id} className="group relative">
-              {/* Card Container with Glassmorphism */}
-              <div className="relative h-full backdrop-blur-xl bg-white/5 border border-white/10 rounded-[40px] p-8 transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:-translate-y-2 overflow-hidden shadow-2xl">
+              {/* Card Container - Horizontal & Compact */}
+              <div className="relative h-full backdrop-blur-xl bg-white/5 border border-white/10 rounded-[32px] p-5 transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:-translate-y-1 overflow-hidden shadow-2xl">
                 
-                {/* Glow Effect on Hover */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[42px] blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-
-                <div className="relative z-10">
-                  {/* Image and Identity */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="relative mb-10">
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[60px] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                      <img 
-                        src={person.image_url || 'https://via.placeholder.com/150'} 
-                        alt={person.name} 
-                        className="w-56 h-56 rounded-[52px] object-cover relative z-10 border-8 border-white/5 group-hover:border-white/20 transition-all duration-700 shadow-3xl grayscale-[50%] group-hover:grayscale-0"
-                      />
-                    </div>
-                    
-                    <h3 className="text-3xl font-black text-white mb-2 group-hover:text-indigo-300 transition-colors">
+                <div className="relative z-10 flex flex-col items-center text-center h-full">
+                  {/* Large Image - Taking up most of the ratio */}
+                  <div className="relative mb-4 w-full aspect-square max-w-[180px] mx-auto">
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[28px] blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                    <img 
+                      src={person.image_url || 'https://via.placeholder.com/150'} 
+                      alt={person.name} 
+                      className="w-full h-full rounded-[24px] object-cover relative z-10 border-4 border-white/10 group-hover:border-white/20 transition-all duration-500 shadow-xl"
+                    />
+                  </div>
+                  
+                  {/* Compact Info Section */}
+                  <div className="flex-grow flex flex-col justify-center">
+                    <h3 className="text-xl font-black text-white mb-0.5 truncate group-hover:text-indigo-300 transition-colors">
                       {person.name}
                     </h3>
-                    <p className="text-indigo-400 font-bold text-sm uppercase tracking-[0.2em] mb-6">
+                    <p className="text-indigo-400 font-bold text-[10px] uppercase tracking-widest mb-3">
                       {person.role}
                     </p>
                     
-                    <p className="text-slate-400 text-base leading-relaxed mb-10 line-clamp-3 font-light">
-                      {person.bio || 'Passionate developer contributing to the academic excellence of COMSATS University.'}
-                    </p>
-
-                    {/* Social Links */}
-                    <div className="flex items-center gap-4">
+                    {/* Social Links - Compact */}
+                    <div className="flex items-center justify-center gap-3">
                       {person.github && (
-                        <a href={ensureAbsoluteUrl(person.github)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white hover:text-slate-900 transition-all duration-300">
-                          <i className="fab fa-github text-lg"></i>
+                        <a href={ensureAbsoluteUrl(person.github)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white hover:text-slate-900 transition-all duration-300">
+                          <i className="fab fa-github text-sm"></i>
                         </a>
                       )}
                       {person.linkedin && (
-                        <a href={ensureAbsoluteUrl(person.linkedin)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-[#0077b5] hover:text-white transition-all duration-300">
-                          <i className="fab fa-linkedin-in text-lg"></i>
+                        <a href={ensureAbsoluteUrl(person.linkedin)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-300 hover:bg-[#0077b5] hover:text-white transition-all duration-300">
+                          <i className="fab fa-linkedin-in text-sm"></i>
                         </a>
                       )}
                       {person.portfolio && (
-                        <a href={ensureAbsoluteUrl(person.portfolio)} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-indigo-600 hover:text-white transition-all duration-300">
-                          <i className="fas fa-globe text-lg"></i>
+                        <a href={ensureAbsoluteUrl(person.portfolio)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-300 hover:bg-indigo-600 hover:text-white transition-all duration-300">
+                          <i className="fas fa-globe text-sm"></i>
                         </a>
                       )}
                     </div>
                   </div>
-                </div>
-
-                {/* Background Pattern */}
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
-                  <i className="fas fa-code text-8xl text-white"></i>
                 </div>
               </div>
             </div>
