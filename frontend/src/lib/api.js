@@ -5,148 +5,136 @@ const getAuthHeaders = () => {
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 };
 
+/**
+ * Enhanced Fetch Wrapper
+ * Handles: JSON parsing, Error catching, Base URL, and Auth Headers
+ */
+async function request(endpoint, options = {}) {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    ...getAuthHeaders(),
+    ...options.headers,
+  };
+
+  // Remove Content-Type if it's FormData (let fetch set it for multipart/form-data)
+  if (options.body instanceof FormData) {
+    delete headers['Content-Type'];
+  }
+
+  const config = {
+    ...options,
+    headers,
+  };
+
+  try {
+    const response = await fetch(url, config);
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      const errorMessage = data?.error || data?.message || `Request failed with status ${response.status}`;
+      
+      // Auto logout if 401 Unauthorized
+      if (response.status === 401 && !url.includes('/auth/login')) {
+        sessionStorage.removeItem('admin_token');
+        window.location.href = '/admin/login';
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    return data;
+  } catch (error) {
+    console.error(`[API Error] ${options.method || 'GET'} ${url}:`, error.message);
+    throw error;
+  }
+}
+
 export const api = {
+  // Health Check
+  checkHealth: () => request('/health'),
+
   // Auth
-  login: async (email, password) => {
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+  login: (email, password) => 
+    request('/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
+    }),
 
   // News
-  getNews: async () => {
-    const res = await fetch(`${API_BASE_URL}/news`);
-    if (!res.ok) throw new Error('Failed to fetch news');
-    return res.json();
-  },
-  getNewsById: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/news/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch news item');
-    return res.json();
-  },
-  createNews: async (data) => {
-    const res = await fetch(`${API_BASE_URL}/news`, {
+  getNews: () => request('/news'),
+  getNewsById: (id) => request(`/news/${id}`),
+  createNews: (data) => 
+    request('/news', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
-  updateNews: async (id, data) => {
-    const res = await fetch(`${API_BASE_URL}/news/${id}`, {
+    }),
+  updateNews: (id, data) => 
+    request(`/news/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
-  deleteNews: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/news/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
+    }),
+  deleteNews: (id) => 
+    request(`/news/${id}`, {
+      method: 'DELETE'
+    }),
 
   // Events
-  getEvents: async () => {
-    const res = await fetch(`${API_BASE_URL}/events`);
-    if (!res.ok) throw new Error('Failed to fetch events');
-    return res.json();
-  },
-  getEventById: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/events/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch event item');
-    return res.json();
-  },
-  createEvent: async (data) => {
-    const res = await fetch(`${API_BASE_URL}/events`, {
+  getEvents: () => request('/events'),
+  getEventById: (id) => request(`/events/${id}`),
+  createEvent: (data) => 
+    request('/events', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
-  updateEvent: async (id, data) => {
-    const res = await fetch(`${API_BASE_URL}/events/${id}`, {
+    }),
+  updateEvent: (id, data) => 
+    request(`/events/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
-  deleteEvent: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/events/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
+    }),
+  deleteEvent: (id) => 
+    request(`/events/${id}`, {
+      method: 'DELETE'
+    }),
 
   // Admins
-  getAdmins: async () => {
-    const res = await fetch(`${API_BASE_URL}/admins`, { headers: getAuthHeaders() });
-    if (!res.ok) throw new Error('Failed to fetch admins');
-    return res.json();
-  },
-  createAdmin: async (data) => {
-    const res = await fetch(`${API_BASE_URL}/admins`, {
+  getAdmins: () => request('/admins'),
+  createAdmin: (data) => 
+    request('/admins', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
-  deleteAdmin: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/admins/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
+    }),
+  deleteAdmin: (id) => 
+    request(`/admins/${id}`, {
+      method: 'DELETE'
+    }),
 
   // Faculty
-  getFaculty: async () => {
-    const res = await fetch(`${API_BASE_URL}/faculty`, { headers: getAuthHeaders() });
-    if (!res.ok) throw new Error('Failed to fetch faculty');
-    return res.json();
-  },
-  createFaculty: async (data) => {
-    const res = await fetch(`${API_BASE_URL}/faculty`, {
+  getFaculty: () => request('/faculty'),
+  createFaculty: (data) => 
+    request('/faculty', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
-  updateFaculty: async (id, data) => {
-    const res = await fetch(`${API_BASE_URL}/faculty/${id}`, {
+    }),
+  updateFaculty: (id, data) => 
+    request(`/faculty/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(data)
+    }),
+  deleteFaculty: (id) => 
+    request(`/faculty/${id}`, {
+      method: 'DELETE'
+    }),
+
+  // Image Upload
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return request('/upload', {
+      method: 'POST',
+      body: formData
     });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
-  },
-  deleteFaculty: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/faculty/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    if (!res.ok) throw new Error((await res.json()).error);
-    return res.json();
   }
 };
+
