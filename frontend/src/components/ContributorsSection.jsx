@@ -34,7 +34,7 @@ export default function ContributorsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 max-w-5xl mx-auto gap-16">
           {contributors.map((person) => (
             <div key={person._id} className="group relative">
               {/* Card Container with Glassmorphism */}
@@ -46,12 +46,12 @@ export default function ContributorsSection() {
                 <div className="relative z-10">
                   {/* Image and Identity */}
                   <div className="flex flex-col items-center text-center">
-                    <div className="relative mb-8">
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[40px] blur-xl opacity-20 group-hover:opacity-50 transition-opacity"></div>
+                    <div className="relative mb-10">
+                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[60px] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                       <img 
                         src={person.image_url || 'https://via.placeholder.com/150'} 
                         alt={person.name} 
-                        className="w-40 h-40 rounded-[36px] object-cover relative z-10 border-4 border-white/10 group-hover:border-white/30 transition-all duration-500 shadow-2xl"
+                        className="w-56 h-56 rounded-[52px] object-cover relative z-10 border-8 border-white/5 group-hover:border-white/20 transition-all duration-700 shadow-3xl grayscale-[50%] group-hover:grayscale-0"
                       />
                     </div>
                     
