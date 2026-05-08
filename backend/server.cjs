@@ -12,6 +12,7 @@ const newsRoutes = require('./routes/newsRoutes.cjs');
 const eventRoutes = require('./routes/eventRoutes.cjs');
 const facultyRoutes = require('./routes/facultyRoutes.cjs');
 const adminRoutes = require('./routes/adminRoutes.cjs');
+const contributorRoutes = require('./routes/contributorRoutes.cjs');
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/news', newsRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/faculty', facultyRoutes);
+app.use('/api/contributors', contributorRoutes);
 app.use('/api', adminRoutes); // Handles /api/auth/login, /api/admins, /api/upload
 
 // Error Handler

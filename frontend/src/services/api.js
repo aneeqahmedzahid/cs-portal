@@ -156,5 +156,34 @@ export const api = {
       headers: getAuthHeaders()
     });
     return handleResponse(res);
+  },
+
+  // Contributors
+  getContributors: async () => {
+    const res = await fetch(`${API_BASE_URL}/contributors`);
+    return handleResponse(res);
+  },
+  createContributor: async (data) => {
+    const res = await fetch(`${API_BASE_URL}/contributors`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify(data)
+    });
+    return handleResponse(res);
+  },
+  updateContributor: async (id, data) => {
+    const res = await fetch(`${API_BASE_URL}/contributors/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify(data)
+    });
+    return handleResponse(res);
+  },
+  deleteContributor: async (id) => {
+    const res = await fetch(`${API_BASE_URL}/contributors/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(res);
   }
 };

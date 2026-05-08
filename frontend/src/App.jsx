@@ -5,6 +5,7 @@ import NewsDetail from './pages/NewsDetail'
 import EventDetail from './pages/EventDetail'
 import AdminLogin from './pages/admin/Login'
 import AdminPortal from './pages/admin/AdminPortal'
+import ContributorsManagement from './pages/admin/ContributorsManagement'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminPortal />} />
+        <Route path="/admin/contributors" element={<ContributorsManagement />} />
       </Routes>
     </BrowserRouter>
   )

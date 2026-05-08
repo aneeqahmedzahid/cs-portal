@@ -614,6 +614,9 @@ We as a team aim to take the department to heights of success and glory and prep
         </div>
       </section>
 
+      {/* Contributors Section */}
+      <ContributorsSection />
+
       {/* Newsletter Section */}
       <section id="newsletter" className="py-32 relative overflow-hidden bg-slate-900">
         <video

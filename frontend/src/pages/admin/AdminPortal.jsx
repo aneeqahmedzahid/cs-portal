@@ -9,12 +9,14 @@ import NewsManagement from './NewsManagement.jsx';
 import EventsManagement from './EventsManagement.jsx';
 import AdminsManagement from './AdminsManagement.jsx';
 import FacultyManagement from './FacultyManagement.jsx';
+import ContributorsManagement from './ContributorsManagement.jsx';
 
 const adminNav = [
   { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-pie' },
   { id: 'news', label: 'News Management', icon: 'fa-newspaper' },
   { id: 'events', label: 'Events Management', icon: 'fa-calendar-days' },
   { id: 'faculty', label: 'Faculty Management', icon: 'fa-user-tie' },
+  { id: 'contributors', label: 'Contributors', icon: 'fa-users' },
   { id: 'admins', label: 'Manage Admins', icon: 'fa-user-shield' },
 ];
 
@@ -55,6 +57,7 @@ export default function AdminPortal() {
       case 'news': return <NewsManagement />;
       case 'events': return <EventsManagement />;
       case 'faculty': return <FacultyManagement />;
+      case 'contributors': return <ContributorsManagement />;
       case 'admins': return <AdminsManagement />;
       default: return <AdminDashboardHome />;
     }
