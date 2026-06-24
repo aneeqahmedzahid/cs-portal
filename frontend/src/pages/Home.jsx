@@ -554,7 +554,7 @@ We as a team aim to take the department to heights of success and glory and prep
             <div className="relative mx-auto w-64 h-64 md:w-80 md:h-80 rounded-full border-[6px] border-white/10 p-2 shadow-[0_0_60px_rgba(31,92,169,0.5)] transition-all duration-700 group-hover:scale-105 group-hover:border-white/30 hover:rotate-3 cursor-pointer">
               <div className="w-full h-full rounded-full overflow-hidden">
                 <img
-                  src="https://media.licdn.com/dms/image/v2/D4D03AQE3ojTTshzLJQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1719893820810?e=1779321600&v=beta&t=SilAn455cBzxOokEzZmBUkUzuHiP-T4i3iqNsiRN2T4"
+                  src="/hod.jpg"
                   alt="Dr. Zia-ur-Rehman"
                   className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                 />
